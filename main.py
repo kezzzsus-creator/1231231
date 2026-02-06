@@ -2,62 +2,85 @@ import discord
 from discord.ext import commands, tasks
 import os
 
-# Włącz intents – bez tego bot nie widzi członków / aktualizacji nicków
 intents = discord.Intents.default()
-intents.members = True          # ważne dla guildMemberUpdate i get_member
+intents.members = True
 
-bot = commands.Bot(command_prefix='!', intents=intents)   # ← TO JEST KLUCZOWA LINIA! Tworzy 'bot'
+bot = commands.Bot(command_prefix='!', intents=intents)
 
-TARGET_USER_ID = 385459721139650561   # ← zmień na ID tej osoby (PPM → Copy User ID)
-FORCED_NICK = "Brudny Murzyn"   # ← Twój wymuszony nick
+TARGET_USER_ID = 385459721139650561
+FORCED_NICK = "Brrrrrr"
 
 @bot.event
 async def on_ready():
-    print(f'Bot {bot.user} jest online i zaczyna lock nicku!')
+    print(f'=== BOT ONLINE === {bot.user}')
+    print(f'Liczba serwerów: {len(bot.guilds)}')
+    
+    if bot.guilds:
+        guild = bot.guilds[0]
+        print(f'Serwer: {guild.name} ({guild.id})')
+        print(f'Bot ma Manage Nicknames? → {guild.me.guild_permissions.manage_nicknames}')
+        print(f'Pozycja roli bota: {guild.me.top_role.position}')
+        
+        member = guild.get_member(TARGET_USER_ID)
+        if member:
+            print(f'Osoba znaleziona! Aktualny nick: {member.nick or "brak nicku (używa globalnego)"}')
+            print(f'ID osoby zgadza się: {member.id == TARGET_USER_ID}')
+        else:
+            print('!!! OSOBA NIE ZNALEZIONA W CACHE !!! (bot jej nie widzi)')
+    else:
+        print('Bot nie jest na żadnym serwerze?')
 
-@tasks.loop(seconds=10)  # sprawdza co 10 sekund – możesz dać 5, ale nie za często (rate-limit)
+    enforce_nick.start()
+
+@tasks.loop(seconds=8)
 async def enforce_nick():
-    # Zakładamy, że bot jest tylko na 1 serwerze – jeśli więcej, zmień na konkretne guild.id
+    print('[LOOP] Sprawdzam nick...')
     if not bot.guilds:
+        print('[LOOP] Brak serwera')
         return
+    
     guild = bot.guilds[0]
     member = guild.get_member(TARGET_USER_ID)
     if member is None:
-        print("Osoba nie znaleziona na serwerze – sprawdź czy jest online / bot ma uprawnienia")
+        print('[LOOP] Członek NIE znaleziony!')
         return
     
-    if member.nick != FORCED_NICK:
+    current_nick = member.nick
+    print(f'[LOOP] Aktualny nick: {current_nick or "brak"}')
+    
+    if current_nick != FORCED_NICK:
+        print(f'[LOOP] Nick inny → próbuję ustawić "{FORCED_NICK}"')
         try:
             await member.edit(nick=FORCED_NICK)
-            print(f'Resetowano nick {member} → {FORCED_NICK}')
+            print(f'[LOOP] SUKCES – nick zmieniony!')
         except discord.Forbidden:
-            print("Błąd: Bot nie ma permisji Manage Nicknames LUB jest za nisko w hierarchii ról!")
+            print('[LOOP] FORBIDDEN – brak permisji lub rola bota za nisko!')
+        except discord.HTTPException as exc:
+            print(f'[LOOP] HTTP błąd: {exc.status} – {exc.text}')
         except Exception as e:
-            print(f"Inny błąd: {e}")
+            print(f'[LOOP] Inny błąd: {type(e).__name__} → {e}')
+    else:
+        print('[LOOP] Nick już poprawny')
 
-# Natychmiastowy reset przy każdej zmianie nicku (najlepsze połączenie)
 @bot.event
 async def on_member_update(before, after):
-    if after.id == TARGET_USER_ID and after.nick != FORCED_NICK:
+    print('[EVENT] on_member_update odpalił!')
+    if after.id != TARGET_USER_ID:
+        return
+    
+    print(f'[EVENT] Zmiana nicku u osoby! Przed: {before.nick} → Po: {after.nick}')
+    if after.nick != FORCED_NICK:
+        print('[EVENT] Resetuję natychmiast!')
         try:
             await after.edit(nick=FORCED_NICK)
-            print(f"Szybki reset nicku dla {after} (on_member_update)")
+            print('[EVENT] Szybki reset → UDANY')
         except Exception as e:
-            print(f"Błąd w on_member_update: {e}")
+            print(f'[EVENT] Błąd resetu: {e}')
 
-# Start loopa po zalogowaniu
-@bot.event
-async def on_ready():
-    print(f'Bot {bot.user} jest online!')
-    enforce_nick.start()   # uruchamia cykliczne sprawdzanie
-
-# Uruchomienie bota
 token = os.getenv("DISCORD_TOKEN")
 if token is None:
-    print("BŁĄD: DISCORD_TOKEN nie znaleziono!")
+    print("Brak tokenu!")
     exit(1)
 
-print("DISCORD_TOKEN z env:", token)
-print("Typ:", type(token))
-
+print("Token OK:", token[:10] + "...")
 bot.run(token)
