@@ -8,7 +8,7 @@ intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 TARGET_USER_ID = 385459721139650561
-FORCED_NICK = "Brudny Murzyn 👨🏿‍🦱💩"
+FORCED_NICK = "Ludzki pisuar 💩🚽"
 
 @bot.event
 async def on_ready():
