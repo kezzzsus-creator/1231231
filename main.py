@@ -1,4 +1,4 @@
-import discord
+iaimport discord
 from discord.ext import commands, tasks
 import os
 
@@ -8,7 +8,7 @@ intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 TARGET_USER_ID = 385459721139650561
-FORCED_NICK = "Ludzki pisuar 💩🚽"
+FORCED_NICK = "Seks-bestia z lipowej 6c 💩🚽"
 
 @bot.event
 async def on_ready():
