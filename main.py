@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands, tasks
 import os
+import random
+import asyncio
 
 intents = discord.Intents.default()
 intents.members = True
@@ -8,7 +10,19 @@ intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 TARGET_USER_ID = 385459721139650561
-FORCED_NICK = "Skazany na anal 🍑 z lipowej 10c"
+
+NICKNAMES = [
+    "Brudny Murzyn 💩👨🏿‍🦱",
+    "Ludzki pisuar 🚽💩",
+    "Skazany na anal 🍑🍆",
+    "Analna niewolnica ojczyma",
+    "Skarpeta Epsteina 🧦🧴"
+]
+
+MIN_INTERVAL = 5
+MAX_INTERVAL = 10
+
+current_forced_nick = random.choice(NICKNAMES)
 
 @bot.event
 async def on_ready():
@@ -23,18 +37,25 @@ async def on_ready():
         
         member = guild.get_member(TARGET_USER_ID)
         if member:
-            print(f'Osoba znaleziona! Aktualny nick: {member.nick or "brak nicku (używa globalnego)"}')
-            print(f'ID osoby zgadza się: {member.id == TARGET_USER_ID}')
+            print(f'Osoba znaleziona! Aktualny nick: {member.nick or "brak nicku"}')
         else:
-            print('!!! OSOBA NIE ZNALEZIONA W CACHE !!! (bot jej nie widzi)')
+            print('!!! OSOBA NIE ZNALEZIONA W CACHE !!!')
     else:
         print('Bot nie jest na żadnym serwerze?')
 
     enforce_nick.start()
 
-@tasks.loop(seconds=8)
+
+@tasks.loop(seconds=7)  # baza, ale zmieniamy dynamicznie co iterację
 async def enforce_nick():
-    print('[LOOP] Sprawdzam nick...')
+    global current_forced_nick
+
+    # Losujemy nowy odstęp czasu na następne wywołanie
+    next_delay = random.uniform(MIN_INTERVAL, MAX_INTERVAL)
+    enforce_nick.change_interval(seconds=next_delay)
+
+    print(f'[LOOP] Sprawdzam nick... (następne sprawdzenie za ~{next_delay:.1f}s)')
+
     if not bot.guilds:
         print('[LOOP] Brak serwera')
         return
@@ -45,37 +66,47 @@ async def enforce_nick():
         print('[LOOP] Członek NIE znaleziony!')
         return
     
-    current_nick = member.nick
-    print(f'[LOOP] Aktualny nick: {current_nick or "brak"}')
+    current_nick = member.nick or ""   # traktujemy brak nicku jako pusty string
+
     
-    if current_nick != FORCED_NICK:
-        print(f'[LOOP] Nick inny → próbuję ustawić "{FORCED_NICK}"')
+    current_forced_nick = random.choice(NICKNAMES)
+    
+    if current_nick != current_forced_nick:
+        print(f'[LOOP] Ustawiam nowy nick → "{current_forced_nick}"')
         try:
-            await member.edit(nick=FORCED_NICK)
-            print(f'[LOOP] SUKCES – nick zmieniony!')
+            await member.edit(nick=current_forced_nick)
+            print(f'[LOOP] SUKCES – nick zmieniony na "{current_forced_nick}"')
         except discord.Forbidden:
             print('[LOOP] FORBIDDEN – brak permisji lub rola bota za nisko!')
         except discord.HTTPException as exc:
-            print(f'[LOOP] HTTP błąd: {exc.status} – {exc.text}')
+            if exc.status == 429:
+                print(f'[LOOP] Rate limit! Retry after: {exc.retry_after:.1f}s')
+            else:
+                print(f'[LOOP] HTTP {exc.status} – {exc.text}')
         except Exception as e:
-            print(f'[LOOP] Inny błąd: {type(e).__name__} → {e}')
+            print(f'[LOOP] Błąd: {type(e).__name__} → {e}')
     else:
-        print('[LOOP] Nick już poprawny')
+        print(f'[LOOP] Nick już jest "{current_forced_nick}" – bez zmian')
+
 
 @bot.event
 async def on_member_update(before, after):
-    print('[EVENT] on_member_update odpalił!')
+    global current_forced_nick
+    
     if after.id != TARGET_USER_ID:
         return
     
-    print(f'[EVENT] Zmiana nicku u osoby! Przed: {before.nick} → Po: {after.nick}')
-    if after.nick != FORCED_NICK:
-        print('[EVENT] Resetuję natychmiast!')
+    current_nick = after.nick or ""
+    
+    if current_nick != current_forced_nick:
+        print(f'[EVENT] Ktoś zmienił nick! Przed: {before.nick} → Po: {current_nick}')
+        print(f'[EVENT] Natychmiast resetuję na "{current_forced_nick}"')
         try:
-            await after.edit(nick=FORCED_NICK)
+            await after.edit(nick=current_forced_nick)
             print('[EVENT] Szybki reset → UDANY')
         except Exception as e:
             print(f'[EVENT] Błąd resetu: {e}')
+
 
 token = os.getenv("DISCORD_TOKEN")
 if token is None:
