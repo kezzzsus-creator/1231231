@@ -16,11 +16,11 @@ NICKNAMES = [
     "Ludzki pisuar 🚽💩",
     "Skazany na anal 🍑🍆",
     "Analna niewolnica ojczyma",
-    "Skarpeta Epsteina 🧦🧴"
+    "Sperm-skieta 🧦🧴"
 ]
 
-MIN_INTERVAL = 5
-MAX_INTERVAL = 10
+MIN_INTERVAL = 3
+MAX_INTERVAL = 5
 
 current_forced_nick = random.choice(NICKNAMES)
 
