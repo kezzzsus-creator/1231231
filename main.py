@@ -16,7 +16,17 @@ NICKNAMES = [
     "Ludzki pisuar 🚽💩",
     "Skazany na anal 🍑🍆",
     "Analna niewolnica ojczyma",
-    "Sperm-skieta 🧦🧴"
+    "Sperm-skieta 🧦🧴",
+    "Cumdump 🧁🧁🧁",
+    "Cumslut 👦💓",
+    "Pasywny połykacz kremiku",
+    "Ulełgy koneser analu 🧴",
+    "Stwardzniała skarpetka",
+    "Kicia ojczyma MEOW 😻",
+    "(An)alternatykwa 🍑🍑",
+    "Uległy worek na sperme🧁",
+    "Strapon Enjoyer 🍆🍑",
+    "_Jakubowsky"
 ]
 
 MIN_INTERVAL = 3
