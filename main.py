@@ -61,8 +61,8 @@ NICKNAMES = [
     "Lipowa 6c, 84-300"
 ]
 
-MIN_INTERVAL = 2
-MAX_INTERVAL = 3
+MIN_INTERVAL = 1
+MAX_INTERVAL = 2
 
 current_forced_nick = random.choice(NICKNAMES)
 
