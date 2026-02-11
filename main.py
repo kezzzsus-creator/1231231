@@ -20,17 +20,49 @@ NICKNAMES = [
     "Cumdump 🧁🧁🧁",
     "Cumslut 👦💓",
     "Pasywny połykacz kremiku",
-    "Ulełgy koneser analu 🧴",
-    "Stwardzniała skarpetka",
+    "Uległy koneser analu 🧴",
+    "Stwardniała skarpetka",
     "Kicia ojczyma MEOW 😻",
     "(An)alternatykwa 🍑🍑",
     "Uległy worek na sperme🧁",
     "Strapon Enjoyer 🍆🍑",
-    "_Jakubowsky"
+    "_Jakubowsky",
+    "Kasti🥛💩🍑",
+    "Czereśniak 🍒🍒🍒",
+    "Pokrowiec na penis🥛",
+    "Księżniczka ojczyma👑",
+    "Spermozjadacz🥛🥛",
+    "Fiutożarł 🦖🍆",
+    "Fiutopo-chłaniacz",
+    "Bezdenny odbyt🍑🥛",
+    "Studnia spermy🥛🧁",
+    "Rozpruta dziweczka🧴",
+    "Luźny Kubuś 🕳️🕳️🕳️",
+    "Gang-bang enjoyer 🧑🏿‍🤝‍🧑🏿🧑🏿‍🤝‍🧑🏿",
+    "Z dupy do mordy👅👅",
+    "Spermojad 👅🥛🧁",
+    "Spermbank👅🥛",
+    "Glory hole🕳️🧑🏿‍🤝‍🧑🏿",
+    "Odbyciak👅🕳️",
+    "Młoda dupa ojczyma🍑",
+    "Koneser spermy🥛🥛🥛",
+    "Zjadacz gówna 💩💩",
+    "Pochłaniacz_ejakulatu06",
+    "Głucha dziwka🦻",
+    "Spermuszka💩🥛",
+    "Sok Tomka Enjoyer🥛🍑",
+    "Koneser napoju tomka🧁🧴",
+    "Wilgotny Kubuś💦💦",
+    "God Of Cum 🥛",
+    "Cum Eater🥛👅",
+    "Cum Note Enjoyer 🧴🥛",
+    "Ojczym Enjoyer 🍆🦖",
+    "Cum Devourer 🥛🥛",
+    "Lipowa 6c, 84-300"
 ]
 
-MIN_INTERVAL = 3
-MAX_INTERVAL = 5
+MIN_INTERVAL = 2
+MAX_INTERVAL = 3
 
 current_forced_nick = random.choice(NICKNAMES)
 
